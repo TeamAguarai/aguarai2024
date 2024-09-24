@@ -1,24 +1,39 @@
-#include <Arduino.h>
 #include <Wire.h>
+#include <Arduino.h>
 
+// Dirección I2C del Arduino
+const int SLAVE_ADDRESS = 0x04;
 
-void loop() {
-  // No necesitamos hacer nada en loop porque la función mandarSeñal
-  // será llamada automáticamente cuando se solicite desde el maestro.
-  delay(1); // Solo para hacer más lento el ciclo
-}
+// Definir los pines analógicos y digitales
+const int analogPins[] = {A0, A1, A2, A3, A4, A5}; // Pines analógicos
+const int digitalPins[] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}; // Pines digitales
+const int totalPins = sizeof(analogPins) / sizeof(analogPins[0]) + sizeof(digitalPins) / sizeof(digitalPins[0]); // Total de pines
 
-// Función que se ejecuta cuando la Raspberry Pi solicita datos
-void mandarSenhal() {
-  int valorAnalogo = analogRead(A0); // Leer el valor del sensor en el pin A0
+// Esta función se llama cuando el maestro solicita datos
+void requestEvent() {
+  // Envía los valores de todos los pines
+  for (int i = 0; i < sizeof(analogPins) / sizeof(analogPins[0]); i++) {
+    Wire.write(analogRead(analogPins[i]) >> 2); // Envía el valor ajustado (0-255)
+  }
 
-  // Enviar el valor como dos bytes (dividir el valor en parte alta y baja)
-  Wire.write(valorAnalogo >> 8);    // Enviar el byte alto (bits 9-16)
-  Wire.write(valorAnalogo & 0xFF);  // Enviar el byte bajo (bits 1-8)
+  for (int i = 0; i < sizeof(digitalPins) / sizeof(digitalPins[0]); i++) {
+    Wire.write(digitalRead(digitalPins[i])); // Envía el valor (0 o 1)
+  }
+
+  // Envía un byte de fin de transmisión
+  Wire.write(0xFF); // Byte de fin de transmisión
 }
 
 void setup() {
-  Wire.begin(8); // Iniciar el Arduino como esclavo con la dirección 8
-  Wire.onRequest(mandarSenhal); // Llama a mandarSeñal cuando el maestro (Raspberry Pi) solicita datos
-  Serial.begin(9600); // Inicializar comunicación serial para depuración
+  Wire.begin(SLAVE_ADDRESS); // Inicia el bus I2C como esclavo
+  Wire.onRequest(requestEvent); // Registra la función que se llama cuando el maestro solicita datos
+
+  // Configura los pines digitales como entrada
+  for (int i = 0; i < sizeof(digitalPins) / sizeof(digitalPins[0]); i++) {
+    pinMode(digitalPins[i], INPUT);
+  }
+}
+
+void loop() {
+  // No se necesita hacer nada en el bucle principal
 }
