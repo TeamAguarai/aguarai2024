@@ -1,26 +1,50 @@
-import smbus
-import time
+import RPi.GPIO as GPIO
+import time, math
 
-# Dirección del esclavo Arduino (en este caso, es 8)
-I2C_ADDRESS = 0x08
-# Crear objeto de bus I2C
-bus = smbus.SMBus(1)  # Usar bus 1 para Raspberry Pi
+# Configuración de la numeración de pines
+GPIO.setmode(GPIO.BOARD)  # Usa la numeración BCM (números GPIO)
 
-def leer_senal_arduino():
+# Define el pin de entrada
+HALL_SENSOR_PIN = 5  # Usa el pin GPIO 17, puedes cambiarlo según tu conexión
+
+# Configura el pin como entrada
+GPIO.setup(HALL_SENSOR_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+vueltas = 0
+distancia_total = 0
+ultima_lectura = time.time()
+circunferencia_rueda = math.pi * 0.047
+
+def contar_vuelta(channel):
+    global vueltas, ultima_lectura, distancia_total
+    vueltas += 1
+    distancia_total += circunferencia_rueda
+    tiempo_actual = time.time()
+    tiempo_transcurrido = tiempo_actual - ultima_lectura
+    ultima_lectura = tiempo_actual
+    
+    # Cálculo de la velocidad (m/s)
+    if tiempo_transcurrido > 0:
+        velocidad = circunferencia_rueda / tiempo_transcurrido
+    else:
+        velocidad = 0
+    
+    # Imprimir resultados
+    print(f"Vueltas: {vueltas}")
+    print(f"Distancia recorrida: {distancia_total:.2f} metros")
+    print(f"Velocidad: {velocidad:.2f} m/s\n")
+
+
+
+if __name__ == "__main__":
     try:
-        # Lee 2 bytes del Arduino
-        data = bus.read_i2c_block_data(I2C_ADDRESS, 0, 2)
-        
-        # Combina los dos bytes para formar el valor entero
-        valor_entero = (data[0] << 8) | data[1]
-        return valor_entero
-    except Exception as e:
-        print(f"Error al leer datos del Arduino: {e}")
-        return None
+        GPIO.add_event_detect(HALL_SENSOR_PIN, GPIO.FALLING, callback=contar_vuelta)
 
-# Ejemplo de uso de la función
-while True:
-    valor = leer_senal_arduino()
-    if valor is not None:
-        print(valor)
-    time.sleep(0.001)  # Espera de 1 segundo antes de la siguiente lectura
+        while True:
+            time.sleep(0.1)
+
+    except KeyboardInterrupt:
+        print("Programa interrumpido")
+
+    finally:
+        # Limpia los pines GPIO al salir
+        GPIO.cleanup()

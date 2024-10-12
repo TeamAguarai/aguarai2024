@@ -1,4 +1,4 @@
-import smbus
+import smbus, time
 
 def get_signals(address) -> dict:
     bus = smbus.SMBus(1)  # Inicializa el bus I2C
@@ -11,7 +11,9 @@ def get_signals(address) -> dict:
     while True:
         try:
             value = bus.read_byte(address)  # Lee un byte del Arduino
+            print(f"Leyendo[{index}]: ", value, " no es igual a ", 0xFF)
             if value == 0xFF:  # Verifica el byte de fin de transmisión
+                print("PIN DE TRANSMICION DETECTADO")
                 break  # Sale del bucle si se recibe el byte de fin
             data_dict[f'pin_{index}'] = value  # Almacena el valor en el diccionario
             index += 1
@@ -21,4 +23,5 @@ def get_signals(address) -> dict:
     return data_dict
 
 while True:
-    print(get_signals())
+    print(get_signals(0x04))
+    time.sleep(1)
