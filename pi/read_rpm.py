@@ -102,25 +102,23 @@ if __name__ == "__main__":
    import time
    import pigpio
 
-   RPM_GPIO = 21
-   RUN_TIME = 60.0
-   SAMPLE_TIME = 2.0
+   RPM_GPIO = 17
+   SAMPLE_TIME = 0.5
 
    pi = pigpio.pi()
 
    p = Reader(pi, RPM_GPIO)
 
-   start = time.time()
+   try:
+      while True:
 
-   while (time.time() - start) < RUN_TIME:
+         time.sleep(SAMPLE_TIME)
 
-      time.sleep(SAMPLE_TIME)
-
-      RPM = p.RPM()
-     
-      print("RPM={}".format(int(RPM+0.5)))
-
-   p.cancel()
-
-   pi.stop()
+         RPM = p.RPM()
+      
+         print("RPM={}".format(int(RPM+0.5)))
+   except KeyboardInterrupt:
+      print("\nPrograma terminado.")
+      p.cancel()
+      pi.stop()
 

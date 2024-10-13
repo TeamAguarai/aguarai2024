@@ -1,6 +1,5 @@
 import pigpio
 import time
-import sys
 
 class Reader:
     def __init__(self, gpio_pin, pulses_per_revolution=2, wheel_perimeter=0.2, sample_time=0.5):
@@ -67,7 +66,7 @@ if __name__ == "__main__":
     RPM_GPIO = 17  # Cambia este valor al pin adecuado de tu sensor de efecto Hall
     PULSES_PER_REVOLUTION = 2  # Cambia este valor según tu sensor
     WHEEL_PERIMETER = 0.105  # Perímetro de la rueda en metros
-    SAMPLE_TIME = 0.1  # Tiempo de muestreo
+    SAMPLE_TIME = 0.2  # Tiempo de muestreo
 
     reader = Reader(RPM_GPIO, PULSES_PER_REVOLUTION, WHEEL_PERIMETER, SAMPLE_TIME)
 
@@ -80,8 +79,7 @@ if __name__ == "__main__":
                 total_pulse_count = reader.get_total_pulse_count()
 
                 # Imprimir en una sola línea con actualización en tiempo real
-                sys.stdout.write(f"\rRPM: {rpm_value:.2f} | Distancia: {distance:.2f} m | Pulsos totales: {total_pulse_count}")
-                sys.stdout.flush()
+                print(f"\rRPM: {rpm_value:.2f} | Distancia: {distance:.2f} m | Pulsos totales: {total_pulse_count}")
 
     except KeyboardInterrupt:
         print("\nPrograma terminado.")
