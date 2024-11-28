@@ -1,7 +1,7 @@
 #define PWM_FREQUENCY 76.92
 
 #include "gpio.h"
-#include <wiringPi.h>
+#include <wiringPi.h> 
 
 
 namespace gpio {
@@ -49,6 +49,10 @@ namespace gpio {
 
     void delay(int ms) {
         ::delay(ms);  
+    }
+
+    void onInterrupt (int pin, int edgeType,  void (*function)(void)) {
+        wiringPiISR(pin, edgeType, function);
     }
 
 }

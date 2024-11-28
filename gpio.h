@@ -8,6 +8,7 @@ namespace gpio {
     void digitalWrite(int pin, int value);
     int digitalRead(int pin);
     void delay(int ms);
+    void onInterrupt (int pin, int edgeType,  void (*function)(void)) ;
 
     const int INPUT = 0;   
     const int OUTPUT = 1; 
