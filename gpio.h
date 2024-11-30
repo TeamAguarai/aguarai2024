@@ -20,6 +20,8 @@ namespace gpio {
     const int PWM_OUTPUT = 2;
     const int GPIO_CLOCK = 3;
     const int PWM_MODE_MS = 0;
+    const int INT_EDGE_RISING = 2;
+
 }
 
 #endif

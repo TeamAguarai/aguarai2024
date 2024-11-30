@@ -1,3 +1,5 @@
+#ifndef MOTOR_H
+#define MOTOR_H
 #include "PulseWidth.h"
 
 class Motor
@@ -11,3 +13,4 @@ public:
     void setSpeed(float pulseWidth);
     ~Motor();
 };
+#endif

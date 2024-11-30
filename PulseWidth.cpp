@@ -1,7 +1,7 @@
 #include "PulseWidth.h"
 #include <stdexcept>
 
-void PulseWidth::define(float min, float max, float steady) 
+void PulseWidth::define(double min, double max, double steady) 
 { 
     this->min = min; 
     this->max = max;
@@ -14,8 +14,9 @@ bool PulseWidth::isDefined()
     return true;
 }
 
-float PulseWidth::validate(float pulseWidth) 
+double PulseWidth::validate(double pulseWidth) 
 {
     if (pulseWidth > this->max) return this->max;
     if (pulseWidth < this->min) return this->min;
+    return pulseWidth;
 }

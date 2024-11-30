@@ -1,10 +1,14 @@
+#ifndef PULSEWIDTH_H
+#define PULSEWIDTH_H
+
 class PulseWidth
 {
 public:
-    float min = -1; // -1 como valor indefinido
-    float max = -1;
-    float steady = -1;
-    void define(float, float, float);
+    double min = -1; // -1 como valor indefinido
+    double max = -1;
+    double steady = -1;
+    void define(double, double, double);
     bool isDefined();
-    float validate(float);
+    double validate(double);
 };
+#endif
