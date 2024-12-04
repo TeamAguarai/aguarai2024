@@ -10,11 +10,14 @@ private:
     double timeInterval;
     struct timespec startTime, endTime;
     static void pulseHandlerWrapper();
+    bool started = false;
 public:
     int pin;
     double speed;
     double wheelDiameter;
-    Velocimeter(int, double);
+    Velocimeter();
+    void definePin(int pin);
+    void defineWheelDiameter(double wheelDiameter);
     void pulseHandler();
     void start();
 };

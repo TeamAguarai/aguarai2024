@@ -5,10 +5,18 @@
 
 Velocimeter* velocimeterInstance = nullptr;
 
-Velocimeter::Velocimeter(int pin, double wheelDiameter) : pin(pin), wheelDiameter(wheelDiameter)
-{
-    this->wheelCircumference = 2 * (wheelDiameter/2) * 3.1416;
+Velocimeter::Velocimeter() {
     velocimeterInstance = this;
+}
+
+void Velocimeter::definePin(int pin) 
+{
+    this->pin = pin;
+}
+
+void Velocimeter::defineWheelDiameter(double wheelDiameter) {
+    this->wheelDiameter = wheelDiameter;
+    this->wheelCircumference = 2 * (wheelDiameter/2) * 3.1416;
 }
 
 void Velocimeter::pulseHandlerWrapper() {
@@ -16,24 +24,21 @@ void Velocimeter::pulseHandlerWrapper() {
 }
 
 void Velocimeter::pulseHandler() {
-    std::cout << "PULSE HANDLER" << std::endl;
-    // clock_gettime(CLOCK_MONOTONIC, &this->endTime);
-    // this->timeInterval = (endTime.tv_sec - startTime.tv_sec) +
-    //                (endTime.tv_nsec - startTime.tv_nsec) / 1e9;
+    clock_gettime(CLOCK_MONOTONIC, &this->endTime);
+    this->timeInterval = (endTime.tv_sec - startTime.tv_sec) +
+                   (endTime.tv_nsec - startTime.tv_nsec) / 1e9;
 
-    // this->speed = (timeInterval > 0) ? (this->wheelCircumference / this->timeInterval) : 0.0;
-
-    // // Actualiza el tiempo del último pulso
-    // clock_gettime(CLOCK_MONOTONIC, &startTime);
+    this->speed = (timeInterval > 0) ? (this->wheelCircumference / this->timeInterval) : 0.0;
+    // std::cout << this->speed  << std::endl;
+    // Actualiza el tiempo del último pulso
+    clock_gettime(CLOCK_MONOTONIC, &startTime);
 }
  
 void Velocimeter::start() {
+    if (this->started == true) return;
     gpio::pinMode(this->pin, gpio::INPUT);
 
-    gpio::onInterrupt(this->pin, gpio::INT_EDGE_RISING, &pulseHandlerWrapper );
-    // if (wiringPiISR(pin, INT_EDGE_RISING, static_cast<void (*)(void)>([=]() { staticPulseHandler(pin); })) < 0) {
-    //     std::cerr << "Error configuring ISR for pin " << pin << std::endl;
-    // }
-    // Inicializa el tiempo
+    gpio::onInterrupt(this->pin, gpio::INT_EDGE_RISING, &pulseHandlerWrapper);
     clock_gettime(CLOCK_MONOTONIC, &this->startTime);
+    this->started = true;
 }

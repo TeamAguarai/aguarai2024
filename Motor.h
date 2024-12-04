@@ -4,13 +4,13 @@
 
 class Motor
 {
-private:
-    
 public:
     PulseWidth pulseWidth;
     int pin;
-    Motor(int);
+    double speed;
+    void definePin(int pin);
+    void definePulseWidthRange(double min, double steady, double max);
     void setSpeed(float pulseWidth);
-    ~Motor();
+    void runForMilliseconds(int milliseconds, double speed);
 };
 #endif
